@@ -3,25 +3,21 @@
 // 
 // Design Name: 
 // Module Name: BT656_out
-// Project Name: BT-656
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: -
-// Additional Comments: Tested PAL only. To select a resolution, uncomment one of the lines below and change the clock frequency
+// Project Name: BT-656 coder, 8 bit
+// Additional Comments: Tested on svga050 @olightek. To select a resolution, uncomment one of the lines below and and adjust the frequency of your design.
 // Encoding: UTF-8 
 //////////////////////////////////////////////////////////////////////////////////
 
 //`define BT_LINE_LENGTH              1716    //NTSC        PCLK = 13.5M
-`define BT_LINE_LENGTH              1728    //PAL        PCLK = 13.5M
+`define BT_LINE_LENGTH                1728    //PAL        PCLK = 13.5M
 //`define BT_LINE_LENGTH              1560    //NTSC SQ        PCLK = 12.2727M
 //`define BT_LINE_LENGTH              1888    //PAL SQ      PCLK = 14.75M
+//`define DEBUG_BT656 
 
 `timescale 1ns/1ps 
 module BT656_out (
                  //  system reset & output clock 
-                 input 	CLK_i,                  //  output clock   
+                 input 	CLK_i,                   //  input clock   
                  input 	RST,                     //  system reset
                  
                  //  format from register
@@ -47,7 +43,6 @@ module BT656_out (
                  output          VSYNC_o,        //  vertical synchronization
                  output          HSYNC_o,        //  horizontal synchronization                     
                  output [ 7 : 0] POUT_o          //  data out  				 
-
                  ); 
                
                
@@ -55,7 +50,7 @@ module BT656_out (
 reg           BT656_OUT_EN_i_d;
 reg           bt_frm_bg; 
 //
-reg  [10 : 0] pix_cnt;       //  1728 per line  
+reg  [10 : 0] pix_cnt;       //  BT_LINE_LENGTH per line  
 wire          pix_cnt_end;   //  
 reg  [ 9 : 0] line_cnt;      //  525/625  per frame for NTSC/PAL  
 wire          line_cnt_end;
@@ -149,8 +144,6 @@ assign go_even = (line_cnt_286 & ~PAL_i) | (line_cnt_336 & PAL_i);
 assign go_vb3  = line_cnt_624 & PAL_i; 
 
 
-
-
 /////////////////////////////////////////////////////////////////  state machine  
 //  state machine  
 /////////////////////////////////////////////////////////////////    
@@ -181,13 +174,13 @@ begin
 				else 
 					state <= S_VB2;
 			S_EVEN : 
-				if (go_vb3)        //  PAL 
+				if (go_vb3)        		//  PAL 
 					state <= S_VB3;
-				else if (go_vb1)   //  NTSC 
+				else if (go_vb1)   		//  NTSC 
 					state <= S_VB1; 				
 				else 
 					state <= S_EVEN; 					 
-			S_VB3 :   //  PAL  
+			S_VB3 :   					//  PAL  
 				if (go_vb1) 
 					state <= S_VB1;
 				else 
@@ -476,21 +469,21 @@ begin
 	    end 
 	    else 
 		begin 
-            // for debug
-            case (pix_cnt[1:0]) 
-                0:
-                    pdata <=  240;  //cr
-                1:
-                    pdata <=  193;  // y
-                2:
-                    pdata <=  90;  //cb
-                3:
-                    pdata <=  193;  // y
-                endcase
-	    	/*
-            // for release
-            pdata <= DIN_i;
-            */	
+            `ifdef DEBUG_BT656
+				case (pix_cnt[1:0]) 
+					0:
+						pdata <=  240;  //cr
+					1:
+						pdata <=  193;  // y
+					2:
+						pdata <=  90;  //cb
+					3:
+						pdata <=  193;  // y
+					endcase
+	    	`else
+				// for release
+				pdata <= DIN_i;
+			`endif	
 		end
 	end					
 end 

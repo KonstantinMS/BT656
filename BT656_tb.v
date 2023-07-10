@@ -2,23 +2,7 @@
 
 
 //////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
-// Create Date: 19.07.2022 15:49:58
-// Design Name: 
-// Module Name: BT656_tb
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
-// Revision:
-// Revision 0.01 - File Created
-// Additional Comments:
-// 
+// Design Name: simple tb
 //////////////////////////////////////////////////////////////////////////////////
 
 
