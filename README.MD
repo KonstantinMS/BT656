@@ -1,4 +1,5 @@
 # BT656_out - BT.656 Video Encoder Module
+![License](https://img.shields.io/badge/License-CC%20BY--NC%204.0-lightgrey.svg)
 
 ## Overview
 
